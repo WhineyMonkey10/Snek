@@ -1,7 +1,6 @@
 import turtle
 import random
 
-print("test")
 screen = turtle.Screen()  # creates the screen
 screen.bgcolor('white')  # sets background as white
 sprite = turtle.Turtle()  # defines the variable sprite as a turtle
@@ -9,11 +8,11 @@ sprite.shape('square')
 sprite.penup()
 sprite.speed(0)
 sprite.goto(-500, 500)
-sprite.speed(1)
+sprite.speed(0)
 screen.addshape("head.gif")
 screen.addshape("tren.gif")
 screen.addshape("body.gif")
-
+game_over = sprite.clone()
 # sprite.shapesize(1)
 
 snek = []
@@ -31,7 +30,7 @@ def create_food():
     food.goto(random_x, random_y)
 
 
-running = False  # to keep track of weather the game is running
+running = True  # to keep track of weather the game is running
 
 
 def create_body(x, y):
@@ -48,6 +47,7 @@ direction = 0
 
 
 def move():
+    global running
     tail = snek[len(snek) - 1]  # get the tail of the snake
     head = snek[0]  # get the head of the snake
     x = head.xcor()  # get the x coordinate of the snake head
@@ -57,18 +57,21 @@ def move():
     if direction == 'down':
         tail.goto(x, y - size)  # tail goes 22 pixels down
         tail.shape("head.gif")
-    if direction == 'up':
+    elif direction == 'up':
         tail.goto(x, y + size)  # tail goes 22 pixels up
         tail.shape("head.gif")
-    if direction == 'right':
+    elif direction == 'right':
         tail.goto(x + size, y)  # tail goes 22 pixels right
         tail.shape("head.gif")
-    if direction == 'left':
+    elif direction == 'left':
         tail.goto(x - size, y)  # tail goes 22 pixels left
         tail.shape("head.gif")
     for i in range(len(snek) - 1):
         snek[i].shape("body.gif")
 
+    for i in range(1, len(snek)):
+        if x == snek[i].xcor() and y == snek[i].ycor():
+            running = False
 
     snek.insert(0, tail)  # move tail to the head
     snek.pop()  # Remove the last element of the list
@@ -121,6 +124,23 @@ def update():
             food.hideturtle()
             create_food()
         screen.ontimer(update, 250)  # Set how fast it's updating the screen
+    else:
+
+        game_over.clear()
+        game_over.hideturtle()
+        game_over.goto(10, 10)
+        game_over.write("Game over. Press R to restart", align="center", font=("Arial", 24, "bold"))
+        #game_over.onclick("r", restart)
+
+
+
+def restart(x, y):
+    global running
+    global snek
+    snek = []
+    running = True
+    screen.clearscreen()
+    start_game()
 
 
 def start_game():
