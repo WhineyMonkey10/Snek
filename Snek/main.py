@@ -13,6 +13,12 @@ screen.addshape("head.gif")
 screen.addshape("tren.gif")
 screen.addshape("body.gif")
 game_over = sprite.clone()
+
+score = 0
+
+score_turtle = sprite.clone()
+score_turtle.goto(0, screen.screensize()[1])
+score_turtle.ht()
 # sprite.shapesize(1)
 
 snek = []
@@ -25,8 +31,8 @@ def create_food():
     food.color('red')
     food.shape("tren.gif")
 
-    random_x = random.randint(-8, 8) * 44  # Generating random x coord for apple
-    random_y = random.randint(-8, 8) * 44  # Generating random x coord for apple
+    random_x = random.randint(-7, 7) * 44  # Generating random x coord for apple
+    random_y = random.randint(-7, 7) * 44  # Generating random x coord for apple
     food.goto(random_x, random_y)
 
 
@@ -108,20 +114,22 @@ def left():
     if not direction == 'right':
         direction = 'left'
 
+def listen():
+    screen.onkey(up, "w")
+    screen.onkey(left, "a")
+    screen.onkey(down, "s")
+    screen.onkey(right, "d")
 
-screen.onkey(up, "w")
-screen.onkey(left, "a")
-screen.onkey(down, "s")
-screen.onkey(right, "d")
+    screen.onkey(up, "Up")
+    screen.onkey(left, "Left")
+    screen.onkey(down, "Down")
+    screen.onkey(right, "Right")
+    screen.listen()
 
-screen.onkey(up, "Up")
-screen.onkey(left, "Left")
-screen.onkey(down, "Down")
-screen.onkey(right, "Right")
-screen.listen()
-
+listen()
 
 def update():
+    global score
     if running:
         move()  # Move the snake at every screen refresh
         head = snek[0]
@@ -131,22 +139,30 @@ def update():
             create_body(x, y)
             food.hideturtle()
             create_food()
+            score += 1
+            score_turtle.clear()
+        score_turtle.write("score: " +str(score), align="center", font = ('Comic Sans', 30, "bold"))
         screen.ontimer(update, 250)  # Set how fast it's updating the screen
     else:
         game_over.clear()
         game_over.hideturtle()
         game_over.goto(10, 10)
-        game_over.write("Game over. Press R to restart", align="center", font=("Arial", 24, "bold"))
+        game_over.write("Game over. Press R to restart", align="center", font=("Comic Sans", 24, "bold"))
         screen.onkey(restart, "r")
 
 
 
 def restart():
     global running
+    global score
+    global game_over
     global snek
     snek = []
-    running = True
+    score = 0
+    score_turtle.clear()
+    game_over.clear()
     screen.clearscreen()
+    listen()
     start_game()
 
 
@@ -163,5 +179,4 @@ start_game()
 
 turtle.done()  # tells it when it's done
 
-# todo: create boundry
 
