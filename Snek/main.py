@@ -8,11 +8,17 @@ sprite.shape('square')
 sprite.penup()
 sprite.speed(0)
 sprite.goto(-500, 500)
-sprite.speed(1)
+sprite.speed(0)
 screen.addshape("head.gif")
 screen.addshape("tren.gif")
 screen.addshape("body.gif")
+game_over = sprite.clone()
 
+score = 0
+
+score_turtle = sprite.clone()
+score_turtle.goto(0, screen.screensize()[1])
+score_turtle.ht()
 # sprite.shapesize(1)
 
 snek = []
@@ -25,12 +31,12 @@ def create_food():
     food.color('red')
     food.shape("tren.gif")
 
-    random_x = random.randint(-8, 8) * 44  # Generating random x coord for apple
-    random_y = random.randint(-8, 8) * 44  # Generating random x coord for apple
+    random_x = random.randint(-7, 7) * 44  # Generating random x coord for apple
+    random_y = random.randint(-7, 7) * 44  # Generating random x coord for apple
     food.goto(random_x, random_y)
 
 
-running = False  # to keep track of weather the game is running
+running = True  # to keep track of weather the game is running
 
 
 def create_body(x, y):
@@ -47,6 +53,7 @@ direction = 0
 
 
 def move():
+    global running
     tail = snek[len(snek) - 1]  # get the tail of the snake
     head = snek[0]  # get the head of the snake
     x = head.xcor()  # get the x coordinate of the snake head
@@ -55,16 +62,30 @@ def move():
 
     if direction == 'down':
         tail.goto(x, y - size)  # tail goes 22 pixels down
-        tail.shape("body.gif")
-    if direction == 'up':
+        tail.shape("head.gif")
+    elif direction == 'up':
         tail.goto(x, y + size)  # tail goes 22 pixels up
-        tail.shape("body.gif")
-    if direction == 'right':
+        tail.shape("head.gif")
+    elif direction == 'right':
         tail.goto(x + size, y)  # tail goes 22 pixels right
-        tail.shape("body.gif")
-    if direction == 'left':
+        tail.shape("head.gif")
+    elif direction == 'left':
         tail.goto(x - size, y)  # tail goes 22 pixels left
-        tail.shape("body.gif")
+        tail.shape("head.gif")
+    for i in range(len(snek) - 1):
+        snek[i].shape("body.gif")
+
+    for i in range(1, len(snek)):
+        if x == snek[i].xcor() and y == snek[i].ycor():
+            running = False
+
+    if x >= (screen.screensize()[0] - 2 * size) or x <= (- screen.screensize()[0] + 2 * size):
+        x = -x
+        running = False
+    if y >= (screen.screensize()[1] + size) or y <= (- screen.screensize()[1] - size):
+        y = -y
+        running = False
+
 
     snek.insert(0, tail)  # move tail to the head
     snek.pop()  # Remove the last element of the list
@@ -93,20 +114,22 @@ def left():
     if not direction == 'right':
         direction = 'left'
 
+def listen():
+    screen.onkey(up, "w")
+    screen.onkey(left, "a")
+    screen.onkey(down, "s")
+    screen.onkey(right, "d")
 
-screen.onkey(up, "w")
-screen.onkey(left, "a")
-screen.onkey(down, "s")
-screen.onkey(right, "d")
+    screen.onkey(up, "Up")
+    screen.onkey(left, "Left")
+    screen.onkey(down, "Down")
+    screen.onkey(right, "Right")
+    screen.listen()
 
-screen.onkey(up, "Up")
-screen.onkey(left, "Left")
-screen.onkey(down, "Down")
-screen.onkey(right, "Right")
-screen.listen()
-
+listen()
 
 def update():
+    global score
     if running:
         move()  # Move the snake at every screen refresh
         head = snek[0]
@@ -116,7 +139,31 @@ def update():
             create_body(x, y)
             food.hideturtle()
             create_food()
+            score += 1
+            score_turtle.clear()
+        score_turtle.write("score: " +str(score), align="center", font = ('Comic Sans', 30, "bold"))
         screen.ontimer(update, 250)  # Set how fast it's updating the screen
+    else:
+        game_over.clear()
+        game_over.hideturtle()
+        game_over.goto(10, 10)
+        game_over.write("Game over. Press R to restart", align="center", font=("Comic Sans", 24, "bold"))
+        screen.onkey(restart, "r")
+
+
+
+def restart():
+    global running
+    global score
+    global game_over
+    global snek
+    snek = []
+    score = 0
+    score_turtle.clear()
+    game_over.clear()
+    screen.clearscreen()
+    listen()
+    start_game()
 
 
 def start_game():
@@ -132,5 +179,4 @@ start_game()
 
 turtle.done()  # tells it when it's done
 
-# todo: create boundry
-# todo: put a face on the snek
+
