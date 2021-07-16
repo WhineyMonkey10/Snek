@@ -1,6 +1,7 @@
 import turtle
 import random
 
+print("test")
 screen = turtle.Screen()  # creates the screen
 screen.bgcolor('white')  # sets background as white
 sprite = turtle.Turtle()  # defines the variable sprite as a turtle
@@ -55,16 +56,19 @@ def move():
 
     if direction == 'down':
         tail.goto(x, y - size)  # tail goes 22 pixels down
-        tail.shape("body.gif")
+        tail.shape("head.gif")
     if direction == 'up':
         tail.goto(x, y + size)  # tail goes 22 pixels up
-        tail.shape("body.gif")
+        tail.shape("head.gif")
     if direction == 'right':
         tail.goto(x + size, y)  # tail goes 22 pixels right
-        tail.shape("body.gif")
+        tail.shape("head.gif")
     if direction == 'left':
         tail.goto(x - size, y)  # tail goes 22 pixels left
-        tail.shape("body.gif")
+        tail.shape("head.gif")
+    for i in range(len(snek) - 1):
+        snek[i].shape("body.gif")
+
 
     snek.insert(0, tail)  # move tail to the head
     snek.pop()  # Remove the last element of the list
