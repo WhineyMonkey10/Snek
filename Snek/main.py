@@ -73,6 +73,14 @@ def move():
         if x == snek[i].xcor() and y == snek[i].ycor():
             running = False
 
+    if x >= (screen.screensize()[0] - 2 * size) or x <= (- screen.screensize()[0] + 2 * size):
+        x = -x
+        running = False
+    if y >= (screen.screensize()[1] + size) or y <= (- screen.screensize()[1] - size):
+        y = -y
+        running = False
+
+
     snek.insert(0, tail)  # move tail to the head
     snek.pop()  # Remove the last element of the list
 
@@ -125,16 +133,15 @@ def update():
             create_food()
         screen.ontimer(update, 250)  # Set how fast it's updating the screen
     else:
-
         game_over.clear()
         game_over.hideturtle()
         game_over.goto(10, 10)
         game_over.write("Game over. Press R to restart", align="center", font=("Arial", 24, "bold"))
-        #game_over.onclick("r", restart)
+        screen.onkey(restart, "r")
 
 
 
-def restart(x, y):
+def restart():
     global running
     global snek
     snek = []
@@ -157,4 +164,4 @@ start_game()
 turtle.done()  # tells it when it's done
 
 # todo: create boundry
-# todo: put a face on the snek
+
